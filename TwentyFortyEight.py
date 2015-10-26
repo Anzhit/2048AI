@@ -81,9 +81,11 @@ class TwentyFortyEight:
 			self.move_helper(initial_list, direction, temporary_list, self.get_grid_width())
 
 	def valid_move(self,direction):
-		tmp=copy.deepcopy(self)
+		tmp = TwentyFortyEight(4, 4)
+		tmp.score = self.score
+		tmp.cells = self.cells
 		tmp.move(direction)
-		if(tmp.__dict__==self.__dict__):
+		if(tmp.cells==self.cells):
 			return False
 		return True
 
@@ -166,12 +168,16 @@ class TwentyFortyEight:
 		return x
 
 	def next_state(self,direction):
-		tmp=copy.deepcopy(self)
+		tmp = TwentyFortyEight(4, 4)
+		tmp.score = self.score
+		tmp.cells = self.cells
 		tmp.move(direction)
 		return tmp
 
 	def next_state_random(self,l):
-		tmp=copy.deepcopy(self)
+		tmp = TwentyFortyEight(4, 4)
+		tmp.score = self.score
+		tmp.cells = self.cells
 		tmp.set_tile(l[0],l[1],l[2])
 		return tmp
 
