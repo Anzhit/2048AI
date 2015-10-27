@@ -2,7 +2,7 @@ from TwentyFortyEight import TwentyFortyEight
 from AI import *
 
 for c in range(10):
-	x=TwentyFortyEight(4,4)
+	x=TwentyFortyEight()
 	x.new_tile()
 	# x.__str__()
 	# print("Score:"+str(x.score)+"\t Max Tile:"+str(x.maxValue()))
