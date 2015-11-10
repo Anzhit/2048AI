@@ -1,5 +1,5 @@
 from TwentyFortyEight import TwentyFortyEight
-
+table ={}
 def minimax_alpha_beta(game_state,depth):
 
   return max(
@@ -39,16 +39,16 @@ def eminimax(game_state,depth):
 	key = lambda x: x[1])[0]
 
 def emin_play(game_state,depth,prob):
-	if game_state.isfilled() or depth==0 or prob<0.005:
+	if game_state.isfilled() or depth==0 or prob<0.002:
 		return game_state.evaluate()
 	avail_moves=game_state.get_available_rand_moves()
 	prob /= len(avail_moves)
 	return sum(
-	map(lambda move: move[3]*emax_play(game_state.next_state_random(move),depth-1,prob*move[3]),
+	map(lambda move: (move[3]/len(avail_moves))*emax_play(game_state.next_state_random(move),depth-1,prob*move[3]),
 	  avail_moves))
 
 def emax_play(game_state,depth,prob):
-	if not(game_state.canMove()) or depth==0 or prob<0.005:
+	if not(game_state.canMove()) or depth==0 or prob<0.002:
 		return game_state.evaluate()
 	return max(
 	map(lambda move: emin_play(game_state.next_state(move),depth-1,prob),

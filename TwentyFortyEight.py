@@ -119,11 +119,6 @@ class TwentyFortyEight:
 				self.set_tile(index_y[0], index_y[1], index_x)
 		
 			temporary_list = []
-		
-		after_move = self.cells
-
-		if before_move != after_move:
-			self.new_tile()	
 
 	def new_tile(self):
 		# Create a new tile in a randomly selected empty 
@@ -138,7 +133,7 @@ class TwentyFortyEight:
 					available_positions.append([row, col])
  
 		if not available_positions:
-			print("There are no available positions.")
+			return
 		else:
 			random_tile = random.choice(available_positions)
  
