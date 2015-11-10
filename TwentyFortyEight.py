@@ -158,8 +158,8 @@ class TwentyFortyEight:
 		for row in range(grid_height):
 			for col in range(grid_width):
 				if self.get_tile(row, col) == 0:
-					available_positions.append([row, col,2])
-					available_positions.append([row, col,4])
+					available_positions.append([row, col,2,0.9])
+					available_positions.append([row, col,4,0.1])
 		return available_positions
 
 	def set_tile(self, row, col, value):
@@ -198,17 +198,21 @@ class TwentyFortyEight:
 		return tmp
 
 	def getColScore(self):
-		x1 = TwentyFortyEight(4,4)
-		for x in range(self.grid_width):
-			for y in range(self.grid_height):
+		global grid_width
+		global grid_height
+		x1 = TwentyFortyEight()
+		for x in range(grid_width):
+			for y in range(grid_height):
 				x1.set_tile(y, x, self.get_tile(x, y))
 		return x1.getRowScore()
 
 	def getRowScore(self):
 		# print "In row score"
 		# self.__str__()
+		global grid_width
+		global grid_height
 		score = 0
-		for x in range(self.grid_height):
+		for x in range(grid_height):
 			sum = 0
 			prevTile = -1
 			prevMerge = 0
@@ -218,7 +222,7 @@ class TwentyFortyEight:
 			mono_left = 0
 			mono_right = 0
 
-			for y in range(self.grid_width):
+			for y in range(grid_width):
 				val = self.get_tile(x, y)
 				sum += self.get_tile(x, y)
 				if(val == 0):
@@ -234,7 +238,7 @@ class TwentyFortyEight:
 					if(prevTile > val):
 						# mono_left += prevTile
 						mono_left += (prevTile ** SCORE_MONOTONICITY_POWER) - (val ** SCORE_MONOTONICITY_POWER)
-					elif(prevTile < val):
+					else:
 						# mono_right += val
 						mono_right += (val ** SCORE_MONOTONICITY_POWER) - (prevTile ** SCORE_MONOTONICITY_POWER)
 				prevTile = val
@@ -257,14 +261,10 @@ class TwentyFortyEight:
 
 		# print "Out row score"
 		return score
-
-	def getBoardScore(self):
-		# print self.getColScore()
-		return self.getRowScore() + self.getColScore()
-
+		
 	def evaluate(self):
 		# return self.maxValue()*self.score
-		return self.getBoardScore()
+		return self.getRowScore() + self.getColScore()
 
 	def isfilled(self):
 		global grid_width

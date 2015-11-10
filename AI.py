@@ -31,6 +31,30 @@ def ABmax_play(game_state,alpha,beta,depth):
 			return v
 		alpha = max(alpha, v)
 	return v
+def eminimax(game_state,depth):
+
+  return max(
+	map(lambda move: (move, emin_play(game_state.next_state(move),depth,1.0)), 
+	  game_state.get_available_moves()), 
+	key = lambda x: x[1])[0]
+
+def emin_play(game_state,depth,prob):
+	if game_state.isfilled() or depth==0 or prob<0.005:
+		return game_state.evaluate()
+	avail_moves=game_state.get_available_rand_moves()
+	prob /= len(avail_moves)
+	return sum(
+	map(lambda move: move[3]*emax_play(game_state.next_state_random(move),depth-1,prob*move[3]),
+	  avail_moves))
+
+def emax_play(game_state,depth,prob):
+	if not(game_state.canMove()) or depth==0 or prob<0.005:
+		return game_state.evaluate()
+	return max(
+	map(lambda move: emin_play(game_state.next_state(move),depth-1,prob),
+	  game_state.get_available_moves()))
+
+
 def minimax(game_state,depth):
 
   return max(
