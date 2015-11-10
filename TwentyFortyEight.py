@@ -1,6 +1,5 @@
 import random     
 import copy
-
 # Directions, DO NOT MODIFY
 UP = 1
 DOWN = 2
@@ -22,47 +21,50 @@ OFFSETS = {UP: (1, 0),
 		   DOWN: (-1, 0), 
 		   LEFT: (0, 1), 
 		   RIGHT: (0, -1)} 
-
+initial={
+			UP : [[0,element] for element in range(4)],
+			DOWN : [[4 - 1, element] for element in range(4)],
+			LEFT : [[element, 0] for element in range(4)],
+			RIGHT : [[element, 4 - 1] for element in range (4)]
+		}
+grid_height=4
+grid_width=4
 class TwentyFortyEight:
 	# Class to run the game logic.
 
-	def __init__(self, grid_height, grid_width):
+	def __init__(self):
 		# Initialize class
-		self.grid_height = grid_height
-		self.grid_width = grid_width
 		self.cells = 0;
 		self.score=0
-
-		# Compute inital row dictionary to make move code cleaner
-		self.initial = {
-			UP : [[0,element] for element in range(self.get_grid_width())],
-			DOWN : [[self.get_grid_height() - 1, element] for element in range(self.get_grid_width())],
-			LEFT : [[element, 0] for element in range(self.get_grid_height())],
-			RIGHT : [[element, self.get_grid_width() - 1] for element in range (self.get_grid_height())]
-		}
 		
 	def __str__(self):
 		# Print a string representation of the grid for debugging.
-		for number in range(0, self.get_grid_height()):
-			for x in range(self.grid_width):
-				print(str(1<<self.get_tile(number, x)) +"\t"),
-			print
+		global grid_width
+		global grid_height
+		for number in range(grid_height):
+			for x in range(grid_width):
+				print(str(1<<self.get_tile(number, x)) +"\t",end=" ")
+			print("",end="\n")
 
 	def get_grid_height(self):
 		# Get the height of the board.
-		return self.grid_height
+		global grid_height
+		return grid_height
 	
 	def get_grid_width(self):
 		# Get the width of the board.
-		return self.grid_width
+		global grid_width
+		return grid_width
 
 	def maxValue(self):
 		"""
 		return the max value in the board
 		"""
 		maxVal = 0
-		for y in range(self.grid_height):
-			for x in range(self.grid_width):
+		global grid_width
+		global grid_height
+		for y in range(grid_height):
+			for x in range(grid_width):
 				maxVal = max(self.get_tile(x,y),maxVal)
 		return 1<<maxVal
 
@@ -77,20 +79,20 @@ class TwentyFortyEight:
 	def move(self, direction):
 		# Move all tiles in the given direction and add
 		# a new tile if any tiles moved.
-		initial_list = self.initial[direction]
-		temporary_list = []
+		global initial
+		initial_list = initial[direction]
 
 		if(direction == UP):
-			self.move_helper(initial_list, direction, temporary_list, self.get_grid_height())
+			self.move_helper(initial_list, direction, self.get_grid_height())
 		elif(direction == DOWN):
-			self.move_helper(initial_list, direction, temporary_list, self.get_grid_height())
+			self.move_helper(initial_list, direction, self.get_grid_height())
 		elif(direction == LEFT):
-			self.move_helper(initial_list, direction, temporary_list, self.get_grid_width())
+			self.move_helper(initial_list, direction, self.get_grid_width())
 		elif(direction == RIGHT):
-			self.move_helper(initial_list, direction, temporary_list, self.get_grid_width())
+			self.move_helper(initial_list, direction,  self.get_grid_width())
 
 	def valid_move(self,direction):
-		tmp = TwentyFortyEight(4, 4)
+		tmp = TwentyFortyEight()
 		tmp.score = self.score
 		tmp.cells = self.cells
 		tmp.move(direction)
@@ -99,21 +101,18 @@ class TwentyFortyEight:
 		return True
 
 
-	def move_helper(self, initial_list, direction, temporary_list, row_or_column):
+	def move_helper(self, initial_list, direction, row_or_column):
 		# Move all columns and merge
 		before_move = self.cells
-
+		temporary_list = []
 		for element in initial_list:
 			temporary_list.append(element)
 			
 			for index in range(1, row_or_column):
 				temporary_list.append([x + y for x, y in zip(temporary_list[-1], OFFSETS[direction])])
 			
-			indices = []
+			indices = [self.get_tile(index[0], index[1]) for index in temporary_list]
 			
-			for index in temporary_list:
-				indices.append(self.get_tile(index[0], index[1]))
-
 			merged_list = self.merge(indices)
 			
 			for index_x, index_y in zip(merged_list, temporary_list):
@@ -131,13 +130,15 @@ class TwentyFortyEight:
 		# square.  The tile should be 2 90% of the time and
 		# 4 10% of the time.
 		available_positions = []
-		for row in range(self.grid_height):
-			for col in range(self.grid_width):
+		global grid_width
+		global grid_height
+		for row in range(grid_height):
+			for col in range(grid_width):
 				if self.get_tile(row, col) == 0:
 					available_positions.append([row, col])
  
 		if not available_positions:
-			print "There are no available positions."
+			print("There are no available positions.")
 		else:
 			random_tile = random.choice(available_positions)
  
@@ -148,12 +149,14 @@ class TwentyFortyEight:
 			self.set_tile(random_tile[0],random_tile[1], tile)
 
 	def get_available_moves(self):
-		return filter(self.valid_move,[1,2,3,4])
+		return list(filter(self.valid_move,[1,2,3,4]))
 
 	def get_available_rand_moves(self):
+		global grid_width
+		global grid_height
 		available_positions = []
-		for row in range(self.grid_height):
-			for col in range(self.grid_width):
+		for row in range(grid_height):
+			for col in range(grid_width):
 				if self.get_tile(row, col) == 0:
 					available_positions.append([row, col,2])
 					available_positions.append([row, col,4])
@@ -161,30 +164,34 @@ class TwentyFortyEight:
 
 	def set_tile(self, row, col, value):
 		# Set the tile at position row, col to have the given value.
-		x = 15 << 4*((self.grid_width*self.grid_height) - ((self.grid_width)*row + col) - 1)
+		global grid_width
+		global grid_height
+		x = 15 << 4*((grid_width*grid_height) - ((grid_width)*row + col) - 1)
 		self.cells = self.cells | x
 
 		y = 0xffffffffffffffff
 		value1 = 15 - value
-		y = y - (value1 << 4*((self.grid_width*self.grid_height) - ((self.grid_width)*row + col) - 1))
+		y = y - (value1 << 4*((grid_width*grid_height) - ((grid_width)*row + col) - 1))
 		self.cells = self.cells & y
 				
 	def get_tile(self, row, col):
 		# Return the value of the tile at position row, col.
-		x = 15 << 4*((self.grid_width*self.grid_height) - ((self.grid_width)*row + col) - 1)
+		global grid_width
+		global grid_height
+		x = 15 << 4*((grid_width*grid_height) - ((grid_width)*row + col) - 1)
 		x = self.cells & x
-		x = x >> 4*((self.grid_width*self.grid_height) - ((self.grid_width)*row + col) - 1)
+		x = x >> 4*((grid_width*grid_height) - ((grid_width)*row + col) - 1)
 		return x
 
 	def next_state(self,direction):
-		tmp = TwentyFortyEight(4, 4)
+		tmp = TwentyFortyEight()
 		tmp.score = self.score
 		tmp.cells = self.cells
 		tmp.move(direction)
 		return tmp
 
 	def next_state_random(self,l):
-		tmp = TwentyFortyEight(4, 4)
+		tmp = TwentyFortyEight()
 		tmp.score = self.score
 		tmp.cells = self.cells
 		tmp.set_tile(l[0],l[1],l[2])
@@ -260,8 +267,10 @@ class TwentyFortyEight:
 		return self.getBoardScore()
 
 	def isfilled(self):
-		for x in range(self.grid_height):
-			for y in range(self.grid_width):
+		global grid_width
+		global grid_height
+		for x in range(grid_height):
+			for y in range(grid_width):
 				if(self.get_tile(x, y)==0):
 					return False
 		return True

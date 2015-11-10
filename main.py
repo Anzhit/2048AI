@@ -1,7 +1,7 @@
 from TwentyFortyEight import TwentyFortyEight
 from AI import *
 
-x=TwentyFortyEight(4,4)
+x=TwentyFortyEight()
 x.new_tile()
 while(x.canMove()):
 	x.__str__()

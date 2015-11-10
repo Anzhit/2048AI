@@ -39,17 +39,15 @@ def minimax(game_state,depth):
 	key = lambda x: x[1])[0]
 
 def min_play(game_state,depth):
-  if game_state.isfilled() or depth==0:
-	return game_state.evaluate()
-  return min(
+	if game_state.isfilled() or depth==0:
+		return game_state.evaluate()
+	return min(
 	map(lambda move: max_play(game_state.next_state_random(move),depth-1),
-	  game_state.get_available_rand_moves()))
+		game_state.get_available_rand_moves()))
 
 def max_play(game_state,depth):
-  if not(game_state.canMove()) or depth==0:
-	return game_state.evaluate()
-  return max(
+	if not(game_state.canMove()) or depth==0:
+		return game_state.evaluate()
+	return max(
 	map(lambda move: min_play(game_state.next_state(move),depth-1),
 	  game_state.get_available_moves()))
-
-  
