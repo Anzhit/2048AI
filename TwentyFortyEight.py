@@ -7,6 +7,15 @@ DOWN = 2
 LEFT = 3
 RIGHT = 4
 
+# Heuristic scoring settings
+SCORE_LOST_PENALTY = 200000.0
+SCORE_MONOTONICITY_POWER = 4.0
+SCORE_MONOTONICITY_WEIGHT = 47.0
+SCORE_SUM_POWER = 3.5
+SCORE_SUM_WEIGHT = 11.0
+SCORE_MERGES_WEIGHT = 700.0
+SCORE_EMPTY_WEIGHT = 270.0
+
 # Offsets for computing tile indices in each direction.
 # DO NOT MODIFY this dictionary.    
 OFFSETS = {UP: (1, 0), 
@@ -181,8 +190,74 @@ class TwentyFortyEight:
 		tmp.set_tile(l[0],l[1],l[2])
 		return tmp
 
+	def getColScore(self):
+		x1 = TwentyFortyEight(4,4)
+		for x in range(self.grid_width):
+			for y in range(self.grid_height):
+				x1.set_tile(y, x, self.get_tile(x, y))
+		return x1.getRowScore()
+
+	def getRowScore(self):
+		# print "In row score"
+		# self.__str__()
+		score = 0
+		for x in range(self.grid_height):
+			sum = 0
+			prevTile = -1
+			prevMerge = 0
+			counter = 0
+			empty = 0
+			merges = 0
+			mono_left = 0
+			mono_right = 0
+
+			for y in range(self.grid_width):
+				val = self.get_tile(x, y)
+				sum += self.get_tile(x, y)
+				if(val == 0):
+					empty += 1
+				else:
+					if(prevMerge == val):
+						counter += 1
+					elif(counter > 0):
+						merges += 1 + counter
+						counter = 0
+					prevMerge = val
+				if(prevTile >= 0):
+					if(prevTile > val):
+						# mono_left += prevTile
+						mono_left += (prevTile ** SCORE_MONOTONICITY_POWER) - (val ** SCORE_MONOTONICITY_POWER)
+					elif(prevTile < val):
+						# mono_right += val
+						mono_right += (val ** SCORE_MONOTONICITY_POWER) - (prevTile ** SCORE_MONOTONICITY_POWER)
+				prevTile = val
+			if(counter > 0):
+				merges += 1+counter
+
+			minMono = mono_left
+			if(mono_left > mono_right):
+				minMono = mono_right
+
+			score += SCORE_LOST_PENALTY
+			score += SCORE_EMPTY_WEIGHT * empty
+			score += SCORE_MERGES_WEIGHT * merges
+			score -= SCORE_MONOTONICITY_WEIGHT * minMono
+			score -= SCORE_SUM_WEIGHT * sum
+
+			# score += empty + merges - minMono - sum
+			# print empty, merges, minMono, sum
+			# print score
+
+		# print "Out row score"
+		return score
+
+	def getBoardScore(self):
+		# print self.getColScore()
+		return self.getRowScore() + self.getColScore()
+
 	def evaluate(self):
-		return self.maxValue()*self.score
+		# return self.maxValue()*self.score
+		return self.getBoardScore()
 
 	def isfilled(self):
 		for x in range(self.grid_height):
