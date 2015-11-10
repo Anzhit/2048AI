@@ -72,9 +72,9 @@ class TwentyFortyEight:
 		"""
 		test if a move is possible
 		"""
-		if(len(self.get_available_moves())):
-			return True
-		return False
+		if(len(self.get_available_moves())==0):
+			return False
+		return True
 
 	def move(self, direction):
 		# Move all tiles in the given direction and add

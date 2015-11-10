@@ -1,6 +1,5 @@
 from TwentyFortyEight import TwentyFortyEight
 from AI import *
-
 x=TwentyFortyEight()
 x.new_tile()
 while(x.canMove()):
@@ -10,3 +9,6 @@ while(x.canMove()):
 	print(dir)
 	x.move(dir)
 	x.new_tile()
+print("GAME END's")
+x.__str__()
+print(x.get_available_moves())
