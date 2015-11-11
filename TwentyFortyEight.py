@@ -71,9 +71,15 @@ class TwentyFortyEight:
 		"""
 		test if a move is possible
 		"""
-		if(len(self.get_available_moves())==0):
-			return False
-		return True
+		global grid_width
+		global grid_height
+		for i in range(grid_height):
+			for j in range(1,grid_width):
+				if self.get_tile(i,j-1)==self.get_tile(i,j) or self.get_tile(j-1,i)==self.get_tile(j,i):
+					return True
+				if self.get_tile(i,j-1)==0 or self.get_tile(i,j)==0 or self.get_tile(j-1,i)==0 or self.get_tile(j,i)==0:
+					return True
+		return False
 
 	def move(self, direction):
 		# Move all tiles in the given direction and add
@@ -133,11 +139,11 @@ class TwentyFortyEight:
 			return
 		else:
 			random_tile = random.choice(available_positions)
- 
-			weighted_choices = [(1, 9), (2, 1)]
-			population = [val for val, cnt in weighted_choices for i in range(cnt)]
-			tile = random.choice(population)
-
+			x=random.randint(0,9)
+			if x==0:
+				tile=2
+			else:
+				tile=1
 			self.set_tile(random_tile[0],random_tile[1], tile)
 
 	def get_available_moves(self):
@@ -150,8 +156,8 @@ class TwentyFortyEight:
 		for row in range(grid_height):
 			for col in range(grid_width):
 				if self.get_tile(row, col) == 0:
-					available_positions.append((row, col,2,0.9))
-					available_positions.append((row, col,4,0.1))
+					available_positions.append((row, col,1,0.9))
+					available_positions.append((row, col,2,0.1))
 		return available_positions
 
 	def set_tile(self, row, col, value):
