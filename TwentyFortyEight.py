@@ -150,8 +150,8 @@ class TwentyFortyEight:
 		for row in range(grid_height):
 			for col in range(grid_width):
 				if self.get_tile(row, col) == 0:
-					available_positions.append([row, col,2,0.9])
-					available_positions.append([row, col,4,0.1])
+					available_positions.append((row, col,2,0.9))
+					available_positions.append((row, col,4,0.1))
 		return available_positions
 
 	def set_tile(self, row, col, value):
