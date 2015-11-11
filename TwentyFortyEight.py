@@ -5,7 +5,6 @@ UP = 1
 DOWN = 2
 LEFT = 3
 RIGHT = 4
-
 # Heuristic scoring settings
 SCORE_LOST_PENALTY = 200000.0
 SCORE_MONOTONICITY_POWER = 4.0
@@ -93,7 +92,6 @@ class TwentyFortyEight:
 
 	def valid_move(self,direction):
 		tmp = TwentyFortyEight()
-		tmp.score = self.score
 		tmp.cells = self.cells
 		tmp.move(direction)
 		if(tmp.cells==self.cells):
@@ -103,7 +101,6 @@ class TwentyFortyEight:
 
 	def move_helper(self, initial_list, direction, row_or_column):
 		# Move all columns and merge
-		before_move = self.cells
 		temporary_list = []
 		for element in initial_list:
 			temporary_list.append(element)
