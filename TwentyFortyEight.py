@@ -210,7 +210,7 @@ class TwentyFortyEight:
 		global grid_height
 		r = 0xffff << 4*((grid_width * (grid_height - row - 1)))
 		r = self.cells & r
-		r = r >> 4*((grid_width * (grid_height - row) - 1))
+		r = r >> 4*((grid_width * (grid_height - row- 1)))
 		return r
 	def getRowScore(self):
 		# print "In row score"
@@ -231,6 +231,7 @@ class TwentyFortyEight:
 			if(row in heur_row_score):
 				score+= heur_row_score[row]
 			else:
+				tscore=0
 				for y in range(grid_width):
 					val = self.get_tile(x, y)
 					sum += self.get_tile(x, y)
@@ -258,12 +259,13 @@ class TwentyFortyEight:
 				if(mono_left > mono_right):
 					minMono = mono_right
 
-				score += SCORE_LOST_PENALTY
-				score += SCORE_EMPTY_WEIGHT * empty
-				score += SCORE_MERGES_WEIGHT * merges
-				score -= SCORE_MONOTONICITY_WEIGHT * minMono
-				score -= SCORE_SUM_WEIGHT * sum
-
+				tscore += SCORE_LOST_PENALTY
+				tscore += SCORE_EMPTY_WEIGHT * empty
+				tscore += SCORE_MERGES_WEIGHT * merges
+				tscore -= SCORE_MONOTONICITY_WEIGHT * minMono
+				tscore -= SCORE_SUM_WEIGHT * sum
+				score+=tscore
+				heur_row_score[row]=tscore
 			# score += empty + merges - minMono - sum
 			# print empty, merges, minMono, sum
 			# print score
