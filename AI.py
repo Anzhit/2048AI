@@ -49,13 +49,13 @@ def emin_play(game_state,depth,prob):
 		return game_state.evaluate()
 	avail_moves=game_state.get_available_rand_moves()
 	prob /= len(avail_moves)
-	#Random Sampling
-	if(len(avail_moves)>10):
-		weights=[ i[3] for i in avail_moves]
-		weights=np.array(weights)
-		weights /= weights.sum()
-		tmp=np.random.choice(len(avail_moves),10,replace=False,p=weights)
-		avail_moves=[avail_moves[i] for i in tmp]
+	# #Random Sampling
+	# if(len(avail_moves)>10):
+	# 	weights=[ i[3] for i in avail_moves]
+	# 	weights=np.array(weights)
+	# 	weights /= weights.sum()
+	# 	tmp=np.random.choice(len(avail_moves),10,replace=False,p=weights)
+	# 	avail_moves=[avail_moves[i] for i in tmp]
 	x = sum(
 	map(lambda move: (move[3]/len(avail_moves))*emax_play(game_state.next_state_random(move),depth-1,prob*move[3]),
 	  avail_moves))
@@ -80,12 +80,25 @@ def monte_carlo(game_state):
 	  game_state.get_available_moves()), 
 	key = lambda x: x[1])[0][0]
 def monte_play(game_state):
-	ans=0
-	for i in range(10):
+	ans=0.0
+	numRuns = 10
+
+	if(game_state.maxValue() >= 16):
+		numRuns = 20
+	elif(game_state.maxValue() >= 32):
+		numRuns = 50
+	elif(game_state.maxValue() >= 256):
+		numRuns = 75
+	elif(game_state.maxValue() >= 512):
+		numRuns = 120
+
+	for i in range(numRuns):
 		# print(i)
 		tmp=TwentyFortyEight()
 		tmp.cells=game_state.cells
 		tmp.score=game_state.score
+
+
 		count = 0
 		while(tmp.canMove()):
 			# count += 1
@@ -94,7 +107,9 @@ def monte_play(game_state):
 			tmp.move(dir)
 			tmp.new_tile()
 			#print(game_state.cells)
-		ans+=tmp.score
+		ans+=tmp.score1()
+	ans /= numRuns
+
 	return ans
 
 def minimax(game_state,depth):

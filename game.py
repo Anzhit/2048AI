@@ -277,8 +277,7 @@ class GabrieleCirulli2048 (TK.Tk):
             # r1,r2=self.grid.x.new_tile()
             # print(str(r1),str(r2))
 
-        self.grid.x.__str__()
-        print(self.grid.x.get_available_moves())
+        
 
     def autoplayMinimax(self):
         print("autoplayMinimax")
@@ -301,13 +300,12 @@ class GabrieleCirulli2048 (TK.Tk):
             # r1,r2=self.grid.x.new_tile()
             # print(str(r1),str(r2))
 
-        self.grid.x.__str__()
-        print(self.grid.x.get_available_moves())
+        
 
     def autoplayMonte(self):
         print("autoplayMonte")
         while(self.grid.x.canMove()):
-            dir=monte_carlo(self.grid.x,2)
+            dir=monte_carlo(self.grid.x)
             _slot = {
 
                 3: self.grid.move_tiles_left,
@@ -325,8 +323,6 @@ class GabrieleCirulli2048 (TK.Tk):
             # r1,r2=self.grid.x.new_tile()
             # print(str(r1),str(r2))
 
-        self.grid.x.__str__()
-        print(self.grid.x.get_available_moves())
 
     def autoplayABMinimax(self):
         print("autoplayABMinimax")
@@ -349,8 +345,6 @@ class GabrieleCirulli2048 (TK.Tk):
             # r1,r2=self.grid.x.new_tile()
             # print(str(r1),str(r2))
 
-        self.grid.x.__str__()
-        print(self.grid.x.get_available_moves())
 
     def run (self, **kw):
         r"""
