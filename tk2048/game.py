@@ -300,15 +300,15 @@ class GabrieleCirulli2048 (TK.Tk):
 
         _slot = {
 
-            "left": self.grid.move_tiles_left,
+            # "left": self.grid.move_tiles_left,
 
-            "right": self.grid.move_tiles_right,
+            # "right": self.grid.move_tiles_right,
 
-            "up": self.grid.move_tiles_up,
+            # "up": self.grid.move_tiles_up,
 
-            "down": self.grid.move_tiles_down,
+            # "down": self.grid.move_tiles_down,
 
-            "escape": self.quit_app,
+            # "escape": self.quit_app,
             "return": self.autoplay,
 
         }.get(tk_event.keysym.lower())
