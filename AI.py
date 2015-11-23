@@ -1,6 +1,7 @@
 from TwentyFortyEight import TwentyFortyEight
 import numpy as np
 table ={}
+table1={}
 def minimax_alpha_beta(game_state,depth):
 
   return max(
@@ -61,13 +62,16 @@ def emin_play(game_state,depth,prob):
 	return x
 
 def emax_play(game_state,depth,prob):
-	# if game_state.cells in table1:
-	# 	return table1[game_state.cells]
+	if game_state.cells in table1:
+		if table1[game_state.cells][1]>=depth:
+			return table1[game_state.cells][0]
 	if not(game_state.canMove()) or depth==0:
 		return game_state.evaluate()
-	return max(
+	x= max(
 	map(lambda x: emin_play(x[1],depth-1,prob),
 	  game_state.get_available_moves()))
+	table1[game_state.cells]=(x,depth)
+	return x
 
 
 def minimax(game_state,depth):
