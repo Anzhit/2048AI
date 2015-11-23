@@ -30,7 +30,7 @@ grid_height=4
 grid_width=4
 tableLeft = []
 tableRight = []
-heur_row_score ={}
+heur_row_score =[]
 class TwentyFortyEight:
 	# Class to run the game logic.
 
@@ -175,12 +175,60 @@ class TwentyFortyEight:
 		global grid_height
 		tableLeft = []
 		tableRight = []
+
 		for row in range(65536):
+
+			sum = 0
+			prevTile = -1
+			prevMerge = 0
+			counter = 0
+			empty = 0
+			merges = 0
+			mono_left = 0
+			mono_right = 0
+
 			vals = []
 			for i in range(grid_height):
 				x = row >> 4*(grid_height - i - 1)
 				x = x & 15
 				vals.append(x)
+
+				tscore=0
+				val = x
+				sum += x
+				if(val == 0):
+					empty += 1
+				else:
+					if(prevMerge == val):
+						counter += 1
+					elif(counter > 0):
+						merges += 1 + counter
+						counter = 0
+					prevMerge = val
+				if(prevTile >= 0):
+					if(prevTile > val):
+						# mono_left += prevTile
+						mono_left += (prevTile ** SCORE_MONOTONICITY_POWER) - (val ** SCORE_MONOTONICITY_POWER)
+					else:
+						# mono_right += val
+						mono_right += (val ** SCORE_MONOTONICITY_POWER) - (prevTile ** SCORE_MONOTONICITY_POWER)
+				prevTile = val
+
+			if(counter > 0):
+				merges += 1+counter
+
+			minMono = mono_left
+			if(mono_left > mono_right):
+				minMono = mono_right
+
+			tscore += SCORE_LOST_PENALTY
+			tscore += SCORE_EMPTY_WEIGHT * empty
+			tscore += SCORE_MERGES_WEIGHT * merges
+			tscore -= SCORE_MONOTONICITY_WEIGHT * minMono
+			tscore -= SCORE_SUM_WEIGHT * sum
+			heur_row_score.append(tscore)
+
+
 			# print(vals, end = " ")
 			val = list(vals)
 			leftVals = self.mergeLeft(val)
@@ -197,6 +245,8 @@ class TwentyFortyEight:
 
 			tableLeft.append(leftNum)
 			tableRight.append(rightNum)
+
+
 
 		# print(len(valsLeft), len(valsRight))
 
@@ -268,7 +318,7 @@ class TwentyFortyEight:
 					available_positions.append([row, col])
  
 		if not available_positions:
-			return
+			return 4,4,0
 		else:
 			random_tile = random.choice(available_positions)
 			x=random.randint(0,9)
@@ -277,6 +327,7 @@ class TwentyFortyEight:
 			else:
 				tile=1
 			self.set_tile(random_tile[0],random_tile[1], tile)
+			return random_tile[0],random_tile[1],tile
 
 	def get_available_moves(self):
 		ans=[]
@@ -403,53 +454,53 @@ class TwentyFortyEight:
 		global grid_height
 		score = 0
 		for x in range(grid_height):
-			sum = 0
-			prevTile = -1
-			prevMerge = 0
-			counter = 0
-			empty = 0
-			merges = 0
-			mono_left = 0
-			mono_right = 0
-			row=self.get_row(x)
-			if(row in heur_row_score):
-				score+= heur_row_score[row]
-			else:
-				tscore=0
-				for y in range(grid_width):
-					val = self.get_tile(x, y)
-					sum += self.get_tile(x, y)
-					if(val == 0):
-						empty += 1
-					else:
-						if(prevMerge == val):
-							counter += 1
-						elif(counter > 0):
-							merges += 1 + counter
-							counter = 0
-						prevMerge = val
-					if(prevTile >= 0):
-						if(prevTile > val):
-							# mono_left += prevTile
-							mono_left += (prevTile ** SCORE_MONOTONICITY_POWER) - (val ** SCORE_MONOTONICITY_POWER)
-						else:
-							# mono_right += val
-							mono_right += (val ** SCORE_MONOTONICITY_POWER) - (prevTile ** SCORE_MONOTONICITY_POWER)
-					prevTile = val
-				if(counter > 0):
-					merges += 1+counter
+			# sum = 0
+			# prevTile = -1
+			# prevMerge = 0
+			# counter = 0
+			# empty = 0
+			# merges = 0
+			# mono_left = 0
+			# mono_right = 0
+			row = self.get_row(x)
+			# if(row in heur_row_score):
+			score += heur_row_score[row]
+			# else:
+				# tscore=0
+				# for y in range(grid_width):
+				# 	val = self.get_tile(x, y)
+				# 	sum += self.get_tile(x, y)
+				# 	if(val == 0):
+				# 		empty += 1
+				# 	else:
+				# 		if(prevMerge == val):
+				# 			counter += 1
+				# 		elif(counter > 0):
+				# 			merges += 1 + counter
+				# 			counter = 0
+				# 		prevMerge = val
+				# 	if(prevTile >= 0):
+				# 		if(prevTile > val):
+				# 			# mono_left += prevTile
+				# 			mono_left += (prevTile ** SCORE_MONOTONICITY_POWER) - (val ** SCORE_MONOTONICITY_POWER)
+				# 		else:
+				# 			# mono_right += val
+				# 			mono_right += (val ** SCORE_MONOTONICITY_POWER) - (prevTile ** SCORE_MONOTONICITY_POWER)
+				# 	prevTile = val
+				# if(counter > 0):
+				# 	merges += 1+counter
 
-				minMono = mono_left
-				if(mono_left > mono_right):
-					minMono = mono_right
+				# minMono = mono_left
+				# if(mono_left > mono_right):
+				# 	minMono = mono_right
 
-				tscore += SCORE_LOST_PENALTY
-				tscore += SCORE_EMPTY_WEIGHT * empty
-				tscore += SCORE_MERGES_WEIGHT * merges
-				tscore -= SCORE_MONOTONICITY_WEIGHT * minMono
-				tscore -= SCORE_SUM_WEIGHT * sum
-				score+=tscore
-				heur_row_score[row]=tscore
+				# tscore += SCORE_LOST_PENALTY
+				# tscore += SCORE_EMPTY_WEIGHT * empty
+				# tscore += SCORE_MERGES_WEIGHT * merges
+				# tscore -= SCORE_MONOTONICITY_WEIGHT * minMono
+				# tscore -= SCORE_SUM_WEIGHT * sum
+				# score+=tscore
+				# heur_row_score[row]=tscore
 			# score += empty + merges - minMono - sum
 			# print empty, merges, minMono, sum
 			# print score

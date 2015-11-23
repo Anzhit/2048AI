@@ -1,2 +1,0 @@
-include LICENSE* README* *.py
-recursive-include src LICENSE* README* *.py

@@ -167,7 +167,7 @@ class GabrieleCirulli2048 (TK.Tk):
 
         ttk.Button(
 
-            self, text="Ciao!", command=self.quit_app,
+            self, text="Pause", command=self.quit_app,
 
         ).pack(side=TK.RIGHT, padx=_pad, pady=_pad)
 
@@ -175,7 +175,25 @@ class GabrieleCirulli2048 (TK.Tk):
 
         ttk.Button(
 
-            self, text="New Game", command=self.new_game,
+            self, text="Monte Carlo", command=self.autoplayMonte,
+
+        ).pack(side=TK.RIGHT)
+
+        ttk.Button(
+
+            self, text="Expectimax", command=self.autoplayEminimax,
+
+        ).pack(side=TK.RIGHT)
+
+        ttk.Button(
+
+            self, text="Minimax", command=self.autoplayMinimax,
+
+        ).pack(side=TK.RIGHT)
+
+        ttk.Button(
+
+            self, text="AlphaBeta", command=self.autoplayABMinimax,
 
         ).pack(side=TK.RIGHT)
 
@@ -204,6 +222,7 @@ class GabrieleCirulli2048 (TK.Tk):
 
         self.grid.reset_grid()
         self.grid.x=TwentyFortyEight()
+        self.grid.x.make_tables()
         # make random tiles to appear
 
         for n in range(self.START_TILES):
@@ -228,7 +247,7 @@ class GabrieleCirulli2048 (TK.Tk):
 
         # ask before actually quitting
 
-        if MB.askokcancel("Question", "Quit game?", parent=self):
+        if MB.askokcancel("Question", "Game Paused. Quit game?", parent=self):
 
             self.quit()
 
@@ -236,13 +255,11 @@ class GabrieleCirulli2048 (TK.Tk):
 
     # end def
 
-    def autoplay(self):
-        print("autoplay")
+    def autoplayEminimax(self):
+        print("eminimax")
         while(self.grid.x.canMove()):
-            self.grid.x.__str__()
-            print("Score:"+str(self.grid.x.score)+"\t Max Tile:"+str(self.grid.x.maxValue()))
+            
             dir=eminimax(self.grid.x,2)
-            print(dir)
             _slot = {
 
                 3: self.grid.move_tiles_left,
@@ -260,12 +277,82 @@ class GabrieleCirulli2048 (TK.Tk):
             # r1,r2=self.grid.x.new_tile()
             # print(str(r1),str(r2))
 
-        print("GAME ENDs")
+        self.grid.x.__str__()
+        print(self.grid.x.get_available_moves())
+
+    def autoplayMinimax(self):
+        print("autoplayMinimax")
+        while(self.grid.x.canMove()):
+            dir=minimax(self.grid.x,2)
+            _slot = {
+
+                3: self.grid.move_tiles_left,
+
+                4: self.grid.move_tiles_right,
+
+                1: self.grid.move_tiles_up,
+
+                2: self.grid.move_tiles_down,
+
+            }.get(dir)
+            _slot()
+            self.update()
+            # self.grid.x.move(dir)
+            # r1,r2=self.grid.x.new_tile()
+            # print(str(r1),str(r2))
+
+        self.grid.x.__str__()
+        print(self.grid.x.get_available_moves())
+
+    def autoplayMonte(self):
+        print("autoplayMonte")
+        while(self.grid.x.canMove()):
+            dir=monte_carlo(self.grid.x,2)
+            _slot = {
+
+                3: self.grid.move_tiles_left,
+
+                4: self.grid.move_tiles_right,
+
+                1: self.grid.move_tiles_up,
+
+                2: self.grid.move_tiles_down,
+
+            }.get(dir)
+            _slot()
+            self.update()
+            # self.grid.x.move(dir)
+            # r1,r2=self.grid.x.new_tile()
+            # print(str(r1),str(r2))
+
+        self.grid.x.__str__()
+        print(self.grid.x.get_available_moves())
+
+    def autoplayABMinimax(self):
+        print("autoplayABMinimax")
+        while(self.grid.x.canMove()):
+            dir=minimax_alpha_beta(self.grid.x,6)
+            _slot = {
+
+                3: self.grid.move_tiles_left,
+
+                4: self.grid.move_tiles_right,
+
+                1: self.grid.move_tiles_up,
+
+                2: self.grid.move_tiles_down,
+
+            }.get(dir)
+            _slot()
+            self.update()
+            # self.grid.x.move(dir)
+            # r1,r2=self.grid.x.new_tile()
+            # print(str(r1),str(r2))
+
         self.grid.x.__str__()
         print(self.grid.x.get_available_moves())
 
     def run (self, **kw):
-        print("run")
         r"""
             actually runs the game;
         """
@@ -279,7 +366,6 @@ class GabrieleCirulli2048 (TK.Tk):
         # init new game
 
         self.new_game(**kw)
-        print("new_game")
 
         # enter the loop
 
@@ -308,8 +394,7 @@ class GabrieleCirulli2048 (TK.Tk):
 
             # "down": self.grid.move_tiles_down,
 
-            # "escape": self.quit_app,
-            "return": self.autoplay,
+            "escape": self.quit_app,
 
         }.get(tk_event.keysym.lower())
 
