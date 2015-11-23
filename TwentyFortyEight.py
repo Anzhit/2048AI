@@ -28,6 +28,8 @@ initial={
 		}
 grid_height=4
 grid_width=4
+tableLeft = []
+tableRight = []
 class TwentyFortyEight:
 	# Class to run the game logic.
 
@@ -35,6 +37,7 @@ class TwentyFortyEight:
 		# Initialize class
 		self.cells = 0;
 		self.score=0
+		# self.print_tables()
 		
 	def __str__(self):
 		# Print a string representation of the grid for debugging.
@@ -87,14 +90,24 @@ class TwentyFortyEight:
 		global initial
 		initial_list = initial[direction]
 
-		if(direction == UP):
-			self.move_helper(initial_list, direction, self.get_grid_height())
-		elif(direction == DOWN):
-			self.move_helper(initial_list, direction, self.get_grid_height())
-		elif(direction == LEFT):
-			self.move_helper(initial_list, direction, self.get_grid_width())
-		elif(direction == RIGHT):
-			self.move_helper(initial_list, direction,  self.get_grid_width())
+		# if(direction == UP):
+		# 	self.move_helper(initial_list, direction, self.get_grid_height())
+		# elif(direction == DOWN):
+		# 	self.move_helper(initial_list, direction, self.get_grid_height())
+		# elif(direction == LEFT):
+		# 	self.move_helper(initial_list, direction, self.get_grid_width())
+		# elif(direction == RIGHT):
+		# 	self.move_helper(initial_list, direction,  self.get_grid_width())
+
+		# print("Before", direction)
+		# print(bin(self.cells))
+		# self.__str__()
+		# for row_or_column in range(grid_height):
+		# 	print(bin(self.get_row(row_or_column)))
+
+		self.move_helper_table(direction)
+		# print("After")
+		# self.__str__()
 
 	def valid_move(self,direction):
 		tmp = TwentyFortyEight()
@@ -104,6 +117,124 @@ class TwentyFortyEight:
 			return False
 		return True
 
+	def move_helper_table(self, direction):
+		# self.__str__()
+		# print(direction)
+
+		global tableLeft
+		global tableRight
+		global grid_height
+		global grid_width
+		if(direction == LEFT):
+			for row_or_column in range(grid_height):
+				self.set_row(row_or_column, tableLeft[self.get_row(row_or_column)])
+		elif(direction == RIGHT):
+			for row_or_column in range(grid_height):
+				self.set_row(row_or_column, tableRight[self.get_row(row_or_column)])
+		elif(direction == UP):
+			for row_or_column in range(grid_width):
+				self.set_colAsRow(row_or_column, tableLeft[self.get_colAsRow(row_or_column)])
+				# print("Step #", row_or_column)
+				# self.__str__()
+		elif(direction == DOWN):
+			for row_or_column in range(grid_width):
+				# print(bin(self.get_colAsRow(row_or_column)))
+				# print(bin(tableRight[self.get_colAsRow(row_or_column)]))
+				self.set_colAsRow(row_or_column, tableRight[self.get_colAsRow(row_or_column)])
+
+
+	def print_tables(self):
+		global tableLeft
+		global tableRight
+		print("Left Table")
+		for i in range(65536):
+			nums = []
+			for j in range(grid_height):
+				x = i >> 4*j
+				x = x & 15
+				nums.append(x)
+			print(bin(i), end=" ")
+			print(" -- ", end=" ")
+			print(bin(tableLeft[i]))
+		
+		print("Right Table\n")
+		for i in range(65536):
+			nums = []
+			for j in range(grid_height):
+				x = i >> 4*j
+				x = x & 15
+				nums.append(x)
+			print(nums, end=" ")
+			print(" -- ", end=" ")
+			print(tableRight[i])
+
+	def make_tables(self):
+		global tableRight
+		global tableLeft
+		global grid_height
+		tableLeft = []
+		tableRight = []
+		for row in range(65536):
+			vals = []
+			for i in range(grid_height):
+				x = row >> 4*(grid_height - i - 1)
+				x = x & 15
+				vals.append(x)
+			# print(vals, end = " ")
+			val = list(vals)
+			leftVals = self.mergeLeft(val)
+			val = list(vals)
+			rightVals = self.mergeRight(val)
+			# print(leftVals, rightVals)
+
+			leftNum = 0
+			for i in leftVals:
+				leftNum = (leftNum << 4) + i
+			rightNum = 0
+			for i in rightVals:
+				rightNum = (rightNum << 4) + i
+
+			tableLeft.append(leftNum)
+			tableRight.append(rightNum)
+
+		# print(len(valsLeft), len(valsRight))
+
+	def mergeLeft(self, nums):
+		size = len(nums)
+	  # remove all the zeroes
+		nums[:] = (value for value in nums if value != 0)
+	  # now do the merging, use an index to run through the list
+		i = 0
+		while (i < len(nums)-1 ):
+			if (nums[i]==nums[i+1]): # if a number is the same as the following
+				nums[i] += 1           # double it 
+				del nums[i+1]          # remove the following
+				# self.score+=1<<nums[i]         # Increment Score
+			i += 1
+	  # restore the initial list length appending zeroes
+		while (len(nums) < size):
+			nums.append(0)
+	  # done
+		return nums
+
+	def mergeRight(self, nums):
+		size = len(nums)
+	  # remove all the zeroes
+		nums[:] = (value for value in nums if value != 0)
+	  # now do the merging, use an index to run through the list
+		i = len(nums) - 1
+		while (i > 0):
+			if (nums[i]==nums[i-1]): # if a number is the same as the following
+				nums[i] += 1           # double it 
+				del nums[i-1]          # remove the following
+				i -= 1
+				# self.score+=1<<nums[i]         # Increment Score
+			i -= 1
+	  # restore the initial list length appending zeroes
+		while (len(nums) < size):
+			nums = [0] + nums
+	  # done
+		return nums
 
 	def move_helper(self, initial_list, direction, row_or_column):
 		# Move all columns and merge
@@ -172,6 +303,59 @@ class TwentyFortyEight:
 		y = y - (value1 << 4*((grid_width*grid_height) - ((grid_width)*row + col) - 1))
 		self.cells = self.cells & y
 				
+	def get_row(self, row):
+		# Return the row at position row.
+		global grid_width
+		global grid_height
+		r = 65535 << 4*((grid_width * (grid_height - row - 1)))
+		r = self.cells & r
+		r = r >> 4*((grid_width * (grid_height - row - 1)))
+		return r
+
+	def set_row(self, row, value):
+		# Set the tile at position row, col to have the given value.
+		global grid_width
+		global grid_height
+		x = 65535 << 4*((grid_width * (grid_height - row - 1)))
+		self.cells = self.cells | x
+
+		y = 0xffffffffffffffff
+		value1 = 65535 - value
+		y = y - (value1 << 4*((grid_width * (grid_height - row - 1))))
+		self.cells = self.cells & y
+
+	def get_colAsRow(self, col):
+		global grid_width
+		global grid_height
+		r = 0
+		for row in range(grid_height):
+			x = 15 << (4*((grid_width*grid_height) - ((grid_width)*row + col) - 1))
+			x = self.cells & x
+			r = (r << 4) + (x >> 4*((grid_width*grid_height) - ((grid_width)*row + col) - 1))
+		return r
+
+	def set_colAsRow(self, col, value):
+		# print("Before setting column #", col, " to ", value)
+		# self.__str__()
+		# Set the tile at position row, col to have the given value.
+		global grid_width
+		global grid_height
+		for rowIterator in range(grid_height):
+			row = grid_height - rowIterator - 1
+			x = 15 << (4*((grid_width*grid_height) - ((grid_width)*row + col) - 1))
+			self.cells = self.cells | x
+
+			y = 0xffffffffffffffff
+
+			valueTemp = value & 15
+			value1 = 15 - valueTemp
+			y = y - (value1 << 4*((grid_width*grid_height) - ((grid_width)*row + col) - 1))
+			self.cells = self.cells & y
+			value = value >> 4
+
+		# print("After setting column #", col, " to ", value)
+		# self.__str__()
+
 	def get_tile(self, row, col):
 		# Return the value of the tile at position row, col.
 		global grid_width
@@ -189,7 +373,7 @@ class TwentyFortyEight:
 		return tmp
 
 	def next_state_random(self,l):
-		tmp = TwentyFortyEight()
+		tmp = TwentyFortyEight()																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										
 		tmp.score = self.score
 		tmp.cells = self.cells
 		tmp.set_tile(l[0],l[1],l[2])
