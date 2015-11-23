@@ -84,7 +84,12 @@ class TwentyFortyEight:
 				if self.get_tile(i,j-1)==0 or self.get_tile(i,j)==0 or self.get_tile(j-1,i)==0 or self.get_tile(j,i)==0:
 					return True
 		return False
-
+	def score1(self):
+		sum=0
+		for i in range(4):
+			for j in range(4):
+				sum+=1<<self.get_tile(i,j)
+		return sum
 	def move(self, direction):
 		# Move all tiles in the given direction and add
 		# a new tile if any tiles moved.
@@ -334,6 +339,7 @@ class TwentyFortyEight:
 		for i in [1,2,3,4]:
 			tmp = TwentyFortyEight()
 			tmp.cells = self.cells
+			tmp.score= self.score
 			tmp.move(i)
 			if(not(tmp.cells==self.cells)):
 				ans.append([i,tmp])
