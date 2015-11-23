@@ -11,5 +11,4 @@ while(x.canMove()):
 	x.new_tile()
 print("GAME ENDs")
 x.__str__()
-print(len(AI.table))
 print(x.get_available_moves())

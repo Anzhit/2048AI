@@ -81,7 +81,12 @@ class TwentyFortyEight:
 				if self.get_tile(i,j-1)==0 or self.get_tile(i,j)==0 or self.get_tile(j-1,i)==0 or self.get_tile(j,i)==0:
 					return True
 		return False
-
+	def score1(self):
+		sum=0
+		for i in range(4):
+			for j in range(4):
+				sum+=1<<self.get_tile(i,j)
+		return sum
 	def move(self, direction):
 		# Move all tiles in the given direction and add
 		# a new tile if any tiles moved.
@@ -137,7 +142,7 @@ class TwentyFortyEight:
 					available_positions.append([row, col])
  
 		if not available_positions:
-			return
+			return 4,4,0
 		else:
 			random_tile = random.choice(available_positions)
 			x=random.randint(0,9)
@@ -146,12 +151,14 @@ class TwentyFortyEight:
 			else:
 				tile=1
 			self.set_tile(random_tile[0],random_tile[1], tile)
+			return random_tile[0],random_tile[1],tile
 
 	def get_available_moves(self):
 		ans=[]
 		for i in [1,2,3,4]:
 			tmp = TwentyFortyEight()
 			tmp.cells = self.cells
+			tmp.score= self.score
 			tmp.move(i)
 			if(not(tmp.cells==self.cells)):
 				ans.append([i,tmp])
