@@ -4,9 +4,9 @@ table ={}
 def minimax_alpha_beta(game_state,depth):
 
   return max(
-	map(lambda move: (move, ABmin_play(move[1],-float('inf'),float('inf'),depth)), 
+	map(lambda move: (move, ABmin_play(game_state.next_state(move),-float('inf'),float('inf'),depth)), 
 	  game_state.get_available_moves()), 
-	key = lambda x: x[1])[0][0]
+	key = lambda x: x[1])[0]
 
 def ABmin_play(game_state,alpha,beta,depth):
 	if game_state.isfilled() or depth==0:
@@ -27,7 +27,8 @@ def ABmax_play(game_state,alpha,beta,depth):
 	
 	v = -float('inf')
 	for move in game_state.get_available_moves():
-		v = max(v, ABmin_play(move[1], alpha, beta, depth-1))
+		s=game_state.next_state(move)
+		v = max(v, ABmin_play(s, alpha, beta, depth-1))
 		if v >= beta:
 			return v
 		alpha = max(alpha, v)
@@ -35,9 +36,9 @@ def ABmax_play(game_state,alpha,beta,depth):
 def eminimax(game_state,depth):
 
   return max(
-	map(lambda move: (move, emin_play(move[1],depth,1.0)), 
+	map(lambda move: (move, emin_play(game_state.next_state(move),depth,1.0)), 
 	  game_state.get_available_moves()), 
-	key = lambda x: x[1])[0][0]
+	key = lambda x: x[1])[0]
 
 def emin_play(game_state,depth,prob):
 	if game_state.cells in table:
@@ -66,16 +67,16 @@ def emax_play(game_state,depth,prob):
 	if not(game_state.canMove()) or depth==0:
 		return game_state.evaluate()
 	return max(
-	map(lambda x: emin_play(x[1],depth-1,prob),
+	map(lambda move: emin_play(game_state.next_state(move),depth-1,prob),
 	  game_state.get_available_moves()))
 
 
 def minimax(game_state,depth):
 
   return max(
-	map(lambda move: (move, min_play(move[1],depth)), 
+	map(lambda move: (move, min_play(game_state.next_state(move),depth)), 
 	  game_state.get_available_moves()), 
-	key = lambda x: x[1])[0][0]
+	key = lambda x: x[1])[0]
 
 def min_play(game_state,depth):
 	if game_state.isfilled() or depth==0:
@@ -89,5 +90,5 @@ def max_play(game_state,depth):
 	if not(game_state.canMove()) or depth==0:
 		return game_state.evaluate()
 	return max(
-	map(lambda move: min_play(move[1],depth-1),
+	map(lambda move: min_play(game_state.next_state(move),depth-1),
 	  game_state.get_available_moves()))
