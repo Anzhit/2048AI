@@ -12,8 +12,8 @@ class Environment(object):
         self.S.new_tile()
         print("New Episode")
     def reset(self):
-        self.S=TwentyFortyEight()
-        self.S.make_tables()
+        self.S.score=0
+        self.S.cells=0
         self.score=0
         self.S.new_tile()
         return self.S.vectorize_state()
