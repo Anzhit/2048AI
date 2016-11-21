@@ -1,5 +1,6 @@
 import random     
 import copy
+import numpy as np
 # Directions, DO NOT MODIFY
 UP = 1
 DOWN = 2
@@ -48,7 +49,15 @@ class TwentyFortyEight:
 			for x in range(grid_width):
 				print(str(1<<self.get_tile(number, x)) +"\t",end=" ")
 			print("",end="\n")
-
+	def vectorize_state(self):
+		global grid_width
+		global grid_height
+		res=[]
+		for number in range(grid_height):
+			for x in range(grid_width):
+				res.append(self.get_tile(number, x))
+		res.append(self.evaluate())
+		return np.asarray(res)   	
 	def get_grid_height(self):
 		# Get the height of the board.
 		global grid_height
