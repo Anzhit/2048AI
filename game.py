@@ -178,16 +178,16 @@ class GabrieleCirulli2048 (TK.Tk):
             self, text="Monte Carlo", command=self.autoplayMonte,
 
         ).pack(side=TK.RIGHT)
-
+        
         ttk.Button(
 
-            self, text="Expectimax", command=self.autoplayEminimax,
+            self, text="Deep Q Learning", command=self.autoplayEminimax,
 
         ).pack(side=TK.RIGHT)
 
         ttk.Button(
 
-            self, text="Minimax", command=self.autoplayMinimax,
+            self, text="Expectimax", command=self.autoplayMinimax,
 
         ).pack(side=TK.RIGHT)
 
