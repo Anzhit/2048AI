@@ -56,7 +56,6 @@ class TwentyFortyEight:
 		for number in range(grid_height):
 			for x in range(grid_width):
 				res.append(self.get_tile(number, x))
-		res.append(self.evaluate())
 		return np.asarray(res)   	
 	def get_grid_height(self):
 		# Get the height of the board.
@@ -94,25 +93,21 @@ class TwentyFortyEight:
 					return True
 		return False
 	def score1(self):
-		sum=0
-		for i in range(4):
-			for j in range(4):
-				sum+=1<<self.get_tile(i,j)
-		return sum
+		return self.score
 	def move(self, direction):
 		# Move all tiles in the given direction and add
 		# a new tile if any tiles moved.
 		global initial
 		initial_list = initial[direction]
 
-		# if(direction == UP):
-		# 	self.move_helper(initial_list, direction, self.get_grid_height())
-		# elif(direction == DOWN):
-		# 	self.move_helper(initial_list, direction, self.get_grid_height())
-		# elif(direction == LEFT):
-		# 	self.move_helper(initial_list, direction, self.get_grid_width())
-		# elif(direction == RIGHT):
-		# 	self.move_helper(initial_list, direction,  self.get_grid_width())
+		if(direction == UP):
+			self.move_helper(initial_list, direction, self.get_grid_height())
+		elif(direction == DOWN):
+			self.move_helper(initial_list, direction, self.get_grid_height())
+		elif(direction == LEFT):
+			self.move_helper(initial_list, direction, self.get_grid_width())
+		elif(direction == RIGHT):
+			self.move_helper(initial_list, direction,  self.get_grid_width())
 
 		# print("Before", direction)
 		# print(bin(self.cells))
@@ -120,7 +115,7 @@ class TwentyFortyEight:
 		# for row_or_column in range(grid_height):
 		# 	print(bin(self.get_row(row_or_column)))
 
-		self.move_helper_table(direction)
+		# self.move_helper_table(direction)
 		# print("After")
 		# self.__str__()
 
@@ -260,6 +255,7 @@ class TwentyFortyEight:
 			tableLeft.append(leftNum)
 			tableRight.append(rightNum)
 
+		return merges
 
 
 		# print(len(valsLeft), len(valsRight))
@@ -351,7 +347,7 @@ class TwentyFortyEight:
 			tmp.score= self.score
 			tmp.move(i)
 			if(not(tmp.cells==self.cells)):
-				ans.append([i,tmp])
+				ans.append(i)
 		return ans
 
 	def get_available_rand_moves(self):
